@@ -7,12 +7,12 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIo(server, {
     cors: {
-        origin: '*', // Adjust for your Angular app's origin
+        origin: '*',
         methods: ['GET', 'POST']
     }
 });
 
-const reservations = []; // Store reservations in memory for simplicity
+const reservations = [];
 
 io.on('connection', (socket) => {
     console.log('A user connected');
@@ -23,7 +23,7 @@ io.on('connection', (socket) => {
         io.emit('getReservations', reservations); // Send current reservations 
     });
 
-    io.emit('getReservations', reservations); // Send current reservations 
+    io.emit('getReservations', reservations);
 
     socket.on('disconnect', () => {
         console.log('User disconnected');
