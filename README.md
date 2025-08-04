@@ -13,13 +13,13 @@ This project is an assignment during the interview process in Burt Intelligence.
 1. Start the backend service first:
    ```
    cd backend
-   node server.js
+   npm i
+   node .\server.js
    ```
 
 2. In a separate terminal, run the frontend application:
    ```
-   cd kafe-reservation
-   npm i
+   npm install
    npm start
    ```
 
