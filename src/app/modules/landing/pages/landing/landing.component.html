@@ -1,0 +1,17 @@
+<div class="flex h-screen w-screen landing-section">
+  <div class="landing-bg bg-primary flex-1 items-center justify-center bg-cover flex flex-col">
+    <div class="max-w-2xl space-y-4 p-8 text-center text-white">
+      <img src="./assets/images/kafe-logo.svg" width="300" alt="dashboard widget" />
+      <h1 class="text-3xl font-bold">"Andorran Brews, Manhattan Mornings"</h1>
+      <p class="text-xs font-light">
+        Tucked into the Lower East Side, <span class="cursor-pointer font-medium text-yellow-400">Kafè</span> blends the 
+        cozy charm of an Andorran mountain café with the energy of New York City. From bold Pyrenean brews to handcrafted pastries, 
+        every cup brings more warmth, more flavor, and more soul to your daily ritual.
+      </p>
+    </div>
+    <app-button impact="bold" tone="primary" shape="pill" size="large" shadow="large" border="small" (click)="navigateToBookingPage()">
+      Reserve a table
+      <svg-icon src="./assets/icons/heroicons/outline/arrow-sm-right.svg" [svgClass]="'h-auto w-10'"> </svg-icon>
+    </app-button>
+  </div>
+</div>

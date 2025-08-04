@@ -1,0 +1,59 @@
+<div class="flex h-screen w-screen landing-section flex-col md:flex-row">
+  <div class="landing-bg bg-primary hidden md:flex md:flex-1 items-center justify-center bg-cover flex-col">
+    <div class="max-w-2xl space-y-4 p-8 text-center text-white">
+      <img src="./assets/images/kafe-logo.svg" width="300" alt="dashboard widget" />
+      <h1 class="text-3xl font-bold">"Andorran Brews, Manhattan Mornings"</h1>
+      <p class="text-xs font-light">
+        Tucked into the Lower East Side, <span class="cursor-pointer font-medium text-yellow-400">Kafè</span> blends the 
+        cozy charm of an Andorran mountain café with the energy of New York City. From bold Pyrenean brews to handcrafted pastries, 
+        every cup brings more warmth, more flavor, and more soul to your daily ritual.
+      </p>
+    </div>
+  </div>
+  <div class="landing-content bg-background flex flex-1 items-center justify-center p-4">
+    <div class="w-full max-w-md px-2 sm:px-4 sm:w-[500px]">
+      <!-- Logo -->
+      <div class="flex flex-col items-center justify-center gap-3 mb-5">
+        <svg-icon src="./assets/images/Kafe-Logo-Orange.svg" [svgClass]="'h-auto w-24 md:w-30'"> </svg-icon>
+        <h2 class="text-lg font-bold">Reservation Details</h2>
+      </div>
+
+      <!-- Receipt Content -->
+      <div class="border rounded-lg p-3 md:p-5 bg-white shadow-md">
+        <p class="text-sm text-gray-600 mb-1">Thank you for your reservation!</p>
+        <p class="text-lg font-semibold mb-4">Your booking is confirmed.</p>
+        <div class="space-y-2 text-sm md:text-base">
+          <hr/>
+          <p class="text-xs">Booking ID: {{ receiptDetails().bookingID }}</p>
+          <p class="text-sm"><strong>Name:</strong> {{ receiptDetails().name }}</p>
+          <p class="text-sm"><strong>Email:</strong> {{ receiptDetails().email }}</p>
+          <p class="text-sm"><strong>Phone:</strong> {{ receiptDetails().phoneNumber }}</p>
+          
+          <p class="text-xs"></p>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="space-y-1">
+              <p class="text-sm"><strong># of Guests:</strong> {{ receiptDetails().partySize }}</p>
+              <p class="text-sm"><strong>Table:</strong> {{ receiptDetails().selectedTable }}</p>
+            </div>
+            <div class="space-y-1">
+              <p class="text-sm"><strong>Date:</strong> {{ receiptDetails().date }}</p>
+              <p class="text-sm"><strong>Time:</strong> {{ receiptDetails().time }}</p>
+            </div>
+          </div>
+        </div>
+        <!-- Add a back button -->
+        <div class="mt-6 flex">
+          <button 
+            (click)="bookAnother()" 
+            class="cursor-pointer w-full mx-2 bg-primary text-white py-2 px-4 rounded-md hover:bg-primary-dark transition-colors">
+            Book Another
+          </button>
+          <button 
+            (click)="bookAnother()" 
+            class="cursor-pointer w-full mx-2 bg-gray-600 text-white py-2 px-4 rounded-md hover:bg-primary-dark transition-colors">
+            Print Receipt
+          </button>
+        </div>
+    </div>
+  </div>
+</div>

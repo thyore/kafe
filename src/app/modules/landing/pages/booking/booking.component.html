@@ -1,0 +1,234 @@
+<div class="scrollbar-thumb-rounded scrollbar-track-rounded grow overflow-auto scrollbar-thin scrollbar-track-transparent scrollbar-thumb-muted">
+  <div class="mx-auto px-2 py-2 sm:px-4 sm:py-4 lg:container">
+    <!-- Header -->
+    <app-header></app-header>
+    <!-- Responsive grid: 1 col on mobile, 2 cols on md+ -->
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="landing-content bg-background flex flex-1 justify-center">
+          <div class="max-w-md w-full overflow-y-auto px-2 py-4 sm:px-4 sm:py-5">
+            <p class="font-semibold">Booking Details</p>
+            <!-- FORM START -->
+            <div class="my-5 space-y-6">
+              <!-- NAME -->
+              <div class="form__group">
+                <div class="relative">
+                  <input
+                    type="text"
+                    id="name"
+                    [ngClass]="{ 'is__invalid-input': submitted() && f['name'].errors }"
+                    class="py-4 !text-base peer block"
+                    placeholder=" "
+                    formControlName="name" />
+                  <label
+                    for="name"
+                    [ngClass]="{ 'peer-focus:text-destructive!': submitted() && f['name'].errors }"
+                    class="bg-background text-muted-foreground peer-focus:text-primary absolute top-2 z-10 origin-[0] -translate-y-4 scale-95 transform px-2 text-sm duration-300 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100 peer-focus:top-2 peer-focus:-translate-y-4 peer-focus:scale-95 peer-focus:px-2 ltr:left-1 rtl:right-1">
+                    Name*
+                  </label>
+                </div>
+                <div *ngIf="submitted() && f['name'].errors" class="is__invalid-error text-red-500 text-sm mt-1">
+                  <div *ngIf="f['name'].errors['required']">Please enter your name.</div>
+                </div>
+              </div>
+
+              <!-- EMAIL -->
+              <div class="form__group">
+                <div class="relative">
+                  <input
+                    type="text"
+                    id="email"
+                    [ngClass]="{ 'is__invalid-input': submitted() && f['email'].errors }"
+                    class="py-4 !text-base peer block"
+                    placeholder=" "
+                    formControlName="email" />
+                  <label
+                    for="email"
+                    [ngClass]="{ 'peer-focus:text-destructive!': submitted() && f['email'].errors }"
+                    class="bg-background text-muted-foreground peer-focus:text-primary absolute top-2 z-10 origin-[0] -translate-y-4 scale-95 transform px-2 text-sm duration-300 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100 peer-focus:top-2 peer-focus:-translate-y-4 peer-focus:scale-95 peer-focus:px-2 ltr:left-1 rtl:right-1">
+                    Email address*
+                  </label>
+                </div>
+                <div *ngIf="submitted() && f['email'].errors" class="is__invalid-error text-red-500 text-sm mt-1">
+                  <div *ngIf="f['email'].errors['required']">Please enter your email address.</div>
+                  <div *ngIf="f['email'].errors['email']">Email must be a valid email address.</div>
+                </div>
+              </div>
+
+              <!-- PHONE NUMBER -->
+              <div class="form__group">
+                <div class="relative">
+                  <input
+                    type="text"
+                    id="phoneNumber"
+                    [ngClass]="{ 'is__invalid-input': submitted() && f['phoneNumber'].errors }"
+                    class="py-4 !text-base peer block"
+                    placeholder=" "
+                    formControlName="phoneNumber" />
+                  <label
+                    for="phoneNumber"
+                    [ngClass]="{ 'peer-focus:text-destructive!': submitted() && f['phoneNumber'].errors }"
+                    class="bg-background text-muted-foreground peer-focus:text-primary absolute top-2 z-10 origin-[0] -translate-y-4 scale-95 transform px-2 text-sm duration-300 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100 peer-focus:top-2 peer-focus:-translate-y-4 peer-focus:scale-95 peer-focus:px-2 ltr:left-1 rtl:right-1">
+                    Phone Number*
+                  </label>
+                </div>
+                <div *ngIf="submitted() && f['phoneNumber'].errors" class="is__invalid-error text-red-500 text-sm mt-1">
+                  <div *ngIf="f['phoneNumber'].errors['required']">Please enter your phone number.</div>
+                  <div *ngIf="f['phoneNumber'].errors['pattern']">Please enter a valid phone number.</div>
+                </div>
+              </div>
+
+              <!-- PARTY SIZE -->
+              <div class="form__group">
+                <div class="relative">
+                  <input
+                    type="number"
+                    min="1"
+                    max="12"
+                    id="partySize"
+                    [ngClass]="{ 'is__invalid-input': submitted() && f['partySize'].errors }"
+                    class="form__group--number py-3 px-3 !text-base peer block"
+                    placeholder=" "
+                    formControlName="partySize" />
+                  <label
+                    for="partySize"
+                    [ngClass]="{ 'peer-focus:text-destructive!': submitted() && f['partySize'].errors }"
+                    class="bg-background text-muted-foreground peer-focus:text-primary absolute top-2 z-10 origin-[0] translate-x-16 translate-y-1 scale-95 transform px-2 text-sm duration-300">
+                    Party Size*
+                  </label>
+                </div>
+                <div *ngIf="submitted() && f['partySize'].errors" class="is__invalid-error text-red-500 text-sm mt-1">
+                  <div *ngIf="f['partySize'].errors['required']">Required field</div>
+                </div>
+              </div>
+
+              <!-- HAS CHILDREN -->
+              <div class="form__group">
+                <div class="relative">
+                  <input
+                    type="checkbox"
+                    id="hasChildren"
+                    [ngClass]="{ 'is__invalid-input': submitted() && f['hasChildren'].errors }"
+                    class="p-3 !text-base peer block"
+                    placeholder=" "
+                    formControlName="hasChildren" />
+                  <label
+                    for="hasChildren"
+                    [ngClass]="{ 'peer-focus:text-destructive!': submitted() && f['hasChildren'].errors }"
+                    class="bg-background text-muted-foreground peer-focus:text-primary absolute top-2 z-10 origin-[0] translate-x-8 -translate-y-1.5 scale-95 transform px-2 text-sm duration-300">
+                    Are you dining with children?
+                  </label>
+                </div>
+              </div>
+
+              <!-- WILL SMOKE -->
+              <div class="form__group">
+                <div class="relative">
+                  <input
+                    type="checkbox"
+                    id="willSmoke"
+                    [ngClass]="{ 'is__invalid-input': submitted() && f['willSmoke'].errors }"
+                    class="p-3 !text-base peer block"
+                    placeholder=" "
+                    formControlName="willSmoke" />
+                  <label
+                    for="willSmoke"
+                    [ngClass]="{ 'peer-focus:text-destructive!': submitted() && f['willSmoke'].errors }"
+                    class="bg-background text-muted-foreground peer-focus:text-primary absolute top-2 z-10 origin-[0] translate-x-8 -translate-y-1.5 scale-95 transform px-2 text-sm duration-300">
+                    Do you require a smoking-friendly option?
+                  </label>
+                </div>
+              </div>
+
+              <!-- SELECTED TABLE (READONLY) -->
+              <div class="form__group">
+                <div class="relative">
+                  <input
+                    type="text"
+                    id="selectedTable"
+                    class="disabled:cursor-not-allowed cursor-pointer py-4 !text-base peer block bg-gray-100"
+                    placeholder=" "
+                    [value]="form.get('selectedTable')?.value || ''"
+                    readonly
+                    tabindex="-1"
+                    (click)="form.get('partySize')?.value ? showTablePicker.set(true) : null"
+                    [disabled]="!form.get('partySize')?.value"
+                  />
+                  <label
+                    for="selectedTable"
+                    class="disabled:cursor-not-allowed cursor-pointer bg-background text-muted-foreground absolute top-2 z-10 origin-[0] -translate-y-4 scale-95 transform px-2 text-sm duration-300 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100 peer-focus:top-2 peer-focus:-translate-y-4 peer-focus:scale-95 peer-focus:px-2 ltr:left-1 rtl:right-1">
+                    Choose a table*
+                  </label>
+                </div>
+                <div *ngIf="submitted() && f['selectedTable'].errors" class="is__invalid-error text-red-500 text-sm mt-1">
+                  <div *ngIf="f['selectedTable'].errors['required']">Please select a table.</div>
+                </div>
+              </div>
+            </div>
+            </div>
+        </div>
+        <!-- TABLE PICKER -->
+        <div class="landing-content bg-background flex flex-1 justify-center" *ngIf="showTablePicker()">
+          <app-table-picker
+            [tables]="availableTables()"
+            [partySize]="form.get('partySize')?.value || 1"
+            [initialSelection]="selectedTable()"
+            [willSmoke]="form.get('willSmoke')?.value || false"
+            [hasChildren]="form.get('hasChildren')?.value || false"
+            (selectedTableChange)="onTableSelect($event)"
+            (close)="toggleTablePicker(false)"
+          ></app-table-picker>
+        </div>
+        
+        <!-- DATE AND TIME -->
+        <div class="landing-content bg-background flex flex-1 justify-center" *ngIf="!showTablePicker()">
+          <div class="max-w-md w-full overflow-y-auto px-2 sm:px-4">
+            <div>
+              <div *ngIf="selectedTable()">
+                <p class="text-foreground mb-3">Select date*</p>
+                <div class="grid grid-cols-6 gap-4">
+                  <button
+                    *ngFor="let date of availableDates()"
+                    class="cursor-pointer text-center py-3 px-4 rounded-xl flex items-center border-gray-200 border-1 justify-center focus-visible:ring-2 focus-visible:ring-offset-2 active:translate-y-px disabled:pointer-events-none disabled:opacity-50"
+                    [ngClass]="{'!bg-primary text-white border-primary': selectedDate() === date.value}"
+                    (click)="onDateChange(date.value)"
+                    type="button"
+                    [disabled]="!selectedTable() || !date.available"
+                  >
+                    <p class="text-sm font-medium">{{ date.value }}</p>
+                  </button>
+                </div>
+                <div *ngIf="submitted() && f['date'].errors" class="is__invalid-error text-red-500 text-sm mt-1">
+                    <div *ngIf="f['date'].errors['required']">Please select a date.</div>
+                </div>
+              </div>
+              
+              <div *ngIf="selectedTable()">
+                <p class="text-foreground my-3" *ngIf="selectedDate()">Select time*</p>
+                <div class="grid grid-cols-3 gap-4">
+                  <button
+                    *ngFor="let time of availableTimeSlots()"
+                    class="cursor-pointer py-3 px-4 rounded-xl flex items-center border-gray-200 border-1 justify-center focus-visible:ring-2 focus-visible:ring-offset-2 active:translate-y-px disabled:pointer-events-none disabled:opacity-50"
+                    [ngClass]="{'!bg-primary text-white border-primary': selectedTime() === time.value}"
+                    (click)="onTimeChange(time.value)"
+                    [disabled]="!selectedDate() || !time.available"
+                    type="button"
+                  >
+                    <p class="text-sm font-medium">{{ time.value }}</p>
+                  </button>
+                </div>
+                <div *ngIf="selectedDate() && submitted() && f['time'].errors" class="is__invalid-error text-red-500 text-sm mt-1">
+                  <div *ngIf="f['time'].errors['required']">Please select a time.</div>
+                </div>
+              </div>
+              
+              <div class="mt-5 pb-5">
+                <app-button full impact="bold" tone="primary" shape="rounded" size="large" (click)="onSubmit()">Confirm Reservation</app-button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
