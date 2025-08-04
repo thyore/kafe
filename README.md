@@ -1,4 +1,4 @@
-# Kafe Reservation System
+# Kafe Table Reservation System
 
 #### Description
 
