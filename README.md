@@ -25,4 +25,8 @@ This project is an assignment during the interview process in Burt Intelligence.
 
 3. Open your browser and navigate to `http://localhost:4200`
 
+#### UI/UX
+![Kafe Logo](https://github.com/thyore/kafe/blob/master/src/assets/images/kafe-preview.webp?raw=true "Kafe Logo")
+![Kafe Logo](https://github.com/thyore/kafe/blob/master/src/assets/images/Kafe-white.png?raw=true "Kafe Logo")
+
 #### Royeth Saniel 2025

@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { AngularSvgIconModule } from 'angular-svg-icon';
 import { ButtonComponent } from 'src/app/shared/components/button/button.component';
 import { HeaderComponent } from '../../components/header/header.component';
-import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { TablePickerComponent } from '../../components/table-picker/table-picker.component';
 import { SocketService } from 'src/app/services/socket.service';
 import { Subscription } from 'rxjs';
@@ -12,9 +12,9 @@ import { DateOption, Reservation, TableOption, TimeSlot } from 'src/app/core/mod
 import { generateUUID } from 'src/app/shared/utils/generateUUID';
 import { tableWithDateAndTime } from './init.data';
 import { ToastrService } from 'ngx-toastr';
-
-
-
+import { emailValidator, nameValidator, phoneValidator } from 'src/app/shared/utils/validators';
+import { formatPhoneNumber } from 'src/app/shared/helper/phone.helper';
+import { countryCodes } from 'src/app/shared/utils/contants';
 
 @Component({
   selector: 'app-booking',
@@ -27,10 +27,13 @@ export class BookingComponent implements OnInit, OnDestroy {
   submitted = signal(false);
 
   showTablePicker = signal(true);
+  showCountryDropdown = signal(false);
+  countrySearchTerm = signal('');
 
   selectedDate = signal<string>('');
   selectedTime = signal<string>('');
   selectedTable = signal<string>('');
+  selectedCountryCode = signal<string>('+63');
 
   updatedReservations = signal<Reservation[]>([]);
   tableData = signal<TableOption[]>(structuredClone(tableWithDateAndTime));
@@ -39,28 +42,102 @@ export class BookingComponent implements OnInit, OnDestroy {
   availableDates = computed(() => this.getDates());
   availableTimeSlots = computed(() => this.getTimeslots());
 
+  filteredCountryCodes = computed(() => {
+    const searchTerm = this.countrySearchTerm().toLowerCase();
+    if (!searchTerm) return countryCodes;
+    
+    return countryCodes.filter(country => 
+      country.country.toLowerCase().includes(searchTerm) ||
+      country.code.includes(searchTerm)
+    );
+  });
+
+  selectedCountryFlag = computed(() => {
+    const country = countryCodes.find(c => c.code === this.selectedCountryCode());
+    return country?.flag || '';
+  });
+
   private reservationSubscription: Subscription = new Subscription();
   private formChangeSubscriptions: Subscription = new Subscription();
 
   constructor(private readonly fb: FormBuilder, private router: Router, private socketService: SocketService, private toastr: ToastrService) {}
 
+  getPhoneNumberFormatter(event: any): void {
+    const selectedCountryCode = this.selectedCountryCode();
+    // Call the helper function to format the phone number
+    formatPhoneNumber(event, selectedCountryCode, this.form);
+  }
+
+  // Method to select country code
+  selectCountryCode(countryCode: string): void {
+    this.selectedCountryCode.set(countryCode);
+    this.showCountryDropdown.set(false);
+    
+    // Update phone number formatting without adding country code
+    const currentValue = this.form.get('phoneNumber')?.value || '';
+    const digitsOnly = currentValue.replace(/\D/g, '');
+    
+    let formattedValue = '';
+    if (digitsOnly.length > 0) {
+      if (digitsOnly.length <= 3) {
+        formattedValue = digitsOnly;
+      } else if (digitsOnly.length <= 6) {
+        formattedValue = digitsOnly.substring(0, 3) + '-' + digitsOnly.substring(3);
+      } else {
+        formattedValue = digitsOnly.substring(0, 3) + '-' + digitsOnly.substring(3, 6) + '-' + digitsOnly.substring(6);
+      }
+    }
+    
+    this.form.get('phoneNumber')?.setValue(formattedValue);
+  }
+
+  // Method to toggle country dropdown
+  toggleCountryDropdown(): void {
+    this.showCountryDropdown.set(!this.showCountryDropdown());
+    if (this.showCountryDropdown()) {
+      this.countrySearchTerm.set('');
+    }
+  }
+
+  // Method to search countries
+  searchCountries(event: Event): void {
+    const target = event.target as HTMLInputElement;
+    this.countrySearchTerm.set(target.value);
+  }
+
   ngOnInit(): void {
     this.initializeForm();
     this.listenForReservationUpdates();
     this.listenForFormChanges();
+    this.setupClickOutsideListener();
   }
 
   ngOnDestroy(): void {
     this.reservationSubscription.unsubscribe();
     this.formChangeSubscriptions.unsubscribe();
+    document.removeEventListener('click', this.handleClickOutside.bind(this));
+  }
+
+  private setupClickOutsideListener(): void {
+    document.addEventListener('click', this.handleClickOutside.bind(this));
+  }
+
+  private handleClickOutside(event: Event): void {
+    const target = event.target as HTMLElement;
+    const dropdown = document.querySelector('.country-dropdown');
+    const button = document.querySelector('.country-dropdown-button');
+    
+    if (dropdown && button && !dropdown.contains(target) && !button.contains(target)) {
+      this.showCountryDropdown.set(false);
+    }
   }
 
   private initializeForm(): void {
     this.form = this.fb.group({
       bookingID: [generateUUID()],
-      name: ['', [Validators.required]],
-      email: ['', [Validators.required, Validators.email]],
-      phoneNumber: ['', [Validators.required]],
+      name: ['', [Validators.required, nameValidator]],
+      email: ['', [Validators.required, Validators.email, emailValidator]],
+      phoneNumber: ['', [Validators.required, phoneValidator]],
       partySize: [1, [Validators.required, Validators.min(1)]],
       hasChildren: [false],
       willSmoke: [false],
@@ -171,6 +248,7 @@ export class BookingComponent implements OnInit, OnDestroy {
   }
 
   onSubmit() {
+    // Set form values before validation (without modifying phone number yet)
     this.form.patchValue({
       date: this.selectedDate(),
       time: this.selectedTime(),
@@ -183,7 +261,14 @@ export class BookingComponent implements OnInit, OnDestroy {
       return;
     }
     
-    const formValue = this.form.value;
+    // Only add country code to phone number after validation passes
+    const phoneNumber = this.form.get('phoneNumber')?.value || '';
+    const fullPhoneNumber = this.selectedCountryCode() + ' ' + phoneNumber;
+    
+    const formValue = {
+      ...this.form.value,
+      phoneNumber: fullPhoneNumber
+    };
     
     if (this.updatedReservations().some(reservation => 
       reservation.selectedTable === formValue.selectedTable && 
@@ -206,10 +291,12 @@ export class BookingComponent implements OnInit, OnDestroy {
   onTableSelect(table: string) {
     this.selectedTable.set(table);
     this.form.get('selectedTable')?.setValue(table);
-    this.form.get('date')?.setValue(''); // Reset date when table is selected
-    this.selectedDate.set(''); // Reset selected date
-    this.form.get('time')?.setValue(''); // Reset time when table is selected
-    this.selectedTime.set(''); // Reset selected time
+    // Reset date when table is selected
+    this.form.get('date')?.setValue('');
+    this.selectedDate.set('');
+    // Reset time when table is selected
+    this.form.get('time')?.setValue('');
+    this.selectedTime.set('');
     this.showTablePicker.set(false);
   }
 

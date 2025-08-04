@@ -29,10 +29,11 @@
                 </div>
                 <div *ngIf="submitted() && f['name'].errors" class="is__invalid-error text-red-500 text-sm mt-1">
                   <div *ngIf="f['name'].errors['required']">Please enter your name.</div>
+                  <div *ngIf="f['name'].errors['hasNumbers']">Name should not contain numeric characters.</div>
                 </div>
               </div>
 
-              <!-- EMAIL -->
+              <!-- START OF EMAIL -->
               <div class="form__group">
                 <div class="relative">
                   <input
@@ -51,34 +52,85 @@
                 </div>
                 <div *ngIf="submitted() && f['email'].errors" class="is__invalid-error text-red-500 text-sm mt-1">
                   <div *ngIf="f['email'].errors['required']">Please enter your email address.</div>
-                  <div *ngIf="f['email'].errors['email']">Email must be a valid email address.</div>
+                  <div *ngIf="f['email'].errors['email'] || f['email'].errors['invalidDomain']">Email must be a valid email address.</div>
                 </div>
               </div>
+              <!-- END OF EMAIL -->
 
-              <!-- PHONE NUMBER -->
+              <!-- START OF PHONE NUMBER -->
               <div class="form__group">
                 <div class="relative">
-                  <input
-                    type="text"
-                    id="phoneNumber"
-                    [ngClass]="{ 'is__invalid-input': submitted() && f['phoneNumber'].errors }"
-                    class="py-4 !text-base peer block"
-                    placeholder=" "
-                    formControlName="phoneNumber" />
+                  <div class="flex">
+                    <!-- Country Code Dropdown -->
+                    <div class="relative">
+                      <button
+                        type="button"
+                        (click)="toggleCountryDropdown()"
+                        class="country-dropdown-button flex items-center justify-between mx-1 px-3 py-4 bg-gray-50 rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary min-w-[100px]">
+                        <div class="flex items-center">
+                          <span class="mr-1">{{ selectedCountryFlag() }}</span>
+                          <span class="text-sm font-medium">{{ selectedCountryCode() }}</span>
+                        </div>
+                        <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                      </button>
+                      
+                      <!-- Dropdown Menu -->
+                      <div *ngIf="showCountryDropdown()" 
+                           class="country-dropdown absolute top-full left-0 z-50 w-64 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-hidden">
+                        <!-- Search Input -->
+                        <div class="sticky top-0 bg-white border-b border-gray-200 p-2">
+                          <input
+                            type="text"
+                            placeholder="Search countries..."
+                            (input)="searchCountries($event)"
+                            class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary">
+                        </div>
+                        
+                        <div class="max-h-48 overflow-y-auto">
+                          <div *ngFor="let country of filteredCountryCodes()" 
+                               (click)="selectCountryCode(country.code)"
+                               class="flex items-center px-3 py-2 hover:bg-gray-100 cursor-pointer">
+                            <span class="mr-2">{{ country.flag }}</span>
+                            <span class="mr-2">{{ country.code }}</span>
+                            <span class="text-sm text-gray-600">{{ country.country }}</span>
+                          </div>
+                          
+                          <div *ngIf="filteredCountryCodes().length === 0" 
+                               class="px-3 py-2 text-sm text-gray-500 text-center">
+                            No countries found
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <!-- Phone Number Input -->
+                    <input
+                      type="text"
+                      id="phoneNumber"
+                      [ngClass]="{ 'is__invalid-input': submitted() && f['phoneNumber'].errors }"
+                      class="py-4 !text-base peer block flex-1 rounded-r-md border-l-0 z-10"
+                      formControlName="phoneNumber"
+                      (input)="getPhoneNumberFormatter($event)"
+                    />
+                  </div>
                   <label
                     for="phoneNumber"
                     [ngClass]="{ 'peer-focus:text-destructive!': submitted() && f['phoneNumber'].errors }"
-                    class="bg-background text-muted-foreground peer-focus:text-primary absolute top-2 z-10 origin-[0] -translate-y-4 scale-95 transform px-2 text-sm duration-300 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100 peer-focus:top-2 peer-focus:-translate-y-4 peer-focus:scale-95 peer-focus:px-2 ltr:left-1 rtl:right-1">
+                    class="bg-background text-muted-foreground peer-focus:text-primary absolute top-2 z-10 origin-[0] translate-x-8 -translate-y-4 scale-95 transform px-2 text-sm duration-300 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100 peer-focus:top-2 peer-focus:-translate-y-4 peer-focus:scale-95 peer-focus:px-2 left-20">
                     Phone Number*
                   </label>
                 </div>
                 <div *ngIf="submitted() && f['phoneNumber'].errors" class="is__invalid-error text-red-500 text-sm mt-1">
                   <div *ngIf="f['phoneNumber'].errors['required']">Please enter your phone number.</div>
-                  <div *ngIf="f['phoneNumber'].errors['pattern']">Please enter a valid phone number.</div>
+                  <div *ngIf="f['phoneNumber'].errors['invalidLength']">Phone number must be exactly 10 digits (excluding country code).</div>
+                  <div *ngIf="f['phoneNumber'].errors['invalidFormat']">Please enter a valid phone number format.</div>
                 </div>
               </div>
+              <!-- END OF PHONE NUMBER -->
 
-              <!-- PARTY SIZE -->
+              <!-- START OF PARTY SIZE -->
               <div class="form__group">
                 <div class="relative">
                   <input
@@ -101,8 +153,9 @@
                   <div *ngIf="f['partySize'].errors['required']">Required field</div>
                 </div>
               </div>
+              <!-- END OF PARTY SIZE -->
 
-              <!-- HAS CHILDREN -->
+              <!-- START OF HAS CHILDREN -->
               <div class="form__group">
                 <div class="relative">
                   <input
@@ -120,8 +173,9 @@
                   </label>
                 </div>
               </div>
+              <!-- END OF HAS CHILDREN -->
 
-              <!-- WILL SMOKE -->
+              <!-- START OF WILL SMOKE -->
               <div class="form__group">
                 <div class="relative">
                   <input
@@ -139,8 +193,9 @@
                   </label>
                 </div>
               </div>
+              <!-- END OF WILL SMOKE -->
 
-              <!-- SELECTED TABLE (READONLY) -->
+              <!-- START OF SELECTED TABLE (READONLY) -->
               <div class="form__group">
                 <div class="relative">
                   <input
@@ -164,10 +219,13 @@
                   <div *ngIf="f['selectedTable'].errors['required']">Please select a table.</div>
                 </div>
               </div>
+              <!-- END OF SELECTED TABLE (READONLY) -->
+
             </div>
-            </div>
+          </div>
         </div>
-        <!-- TABLE PICKER -->
+
+        <!-- START OF TABLE PICKER -->
         <div class="landing-content bg-background flex flex-1 justify-center" *ngIf="showTablePicker()">
           <app-table-picker
             [tables]="availableTables()"
@@ -179,8 +237,9 @@
             (close)="toggleTablePicker(false)"
           ></app-table-picker>
         </div>
+        <!-- END OF TABLE PICKER -->
         
-        <!-- DATE AND TIME -->
+        <!-- START OF DATE AND TIME -->
         <div class="landing-content bg-background flex flex-1 justify-center" *ngIf="!showTablePicker()">
           <div class="max-w-md w-full overflow-y-auto px-2 sm:px-4">
             <div>
@@ -228,6 +287,8 @@
             </div>
           </div>
         </div>
+        <!-- END OF DATE AND TIME -->
+
       </div>
     </form>
   </div>

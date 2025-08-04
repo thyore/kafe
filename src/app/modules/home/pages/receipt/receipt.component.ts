@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, signal } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AngularSvgIconModule } from 'angular-svg-icon';
+import { ToastrService } from 'ngx-toastr';
 import { SocketService } from 'src/app/services/socket.service';
 import { generateUUID } from 'src/app/shared/utils/generateUUID';
 
@@ -16,7 +17,7 @@ export class ReceiptComponent {
 
   receiptDetails = signal<any>({});
 
-  constructor(private route: ActivatedRoute, private router: Router, private socketService: SocketService) {
+  constructor(private route: ActivatedRoute, private router: Router, private socketService: SocketService, private toastr: ToastrService) {
     this.route.queryParams.subscribe(params => {
       if (!params || Object.keys(params).length === 0 || !params['name'] || !params['selectedTable'] || !params['date'] || !params['time']) {
         this.router.navigate(['/booking']);
@@ -34,5 +35,9 @@ export class ReceiptComponent {
     } catch (error) {
       this.router.navigate(['/booking']);
     }
+  }
+
+  printReceipt() {
+    this.toastr.info('Printing receipt...', 'Info');
   }
 }
